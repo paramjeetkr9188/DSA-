@@ -1,1 +1,68 @@
+#include <stdio.h>
 
+int main() {
+    int n = 4; // number of vertices: 0=A, 1=B, 2=C, 3=D
+    
+    // Adjacency matrix of the graph
+    int graph[4][4] = {
+        {0, 2, 6, 0},
+        {2, 0, 3, 5},
+        {6, 3, 0, 0},
+        {0, 5, 0, 0}
+    };
+
+    int key[4];
+    int parent[4];
+    int visited[4];
+    char name[4] = {'A', 'B', 'C', 'D'};
+
+    // 1) for v <- 0 to (v-1) do
+    for (int v = 0; v < n; v++) {
+        key[v] = 99999;     // key[v] <- infinity
+        parent[v] = -1;     // parent[v] <- -1
+        visited[v] = 0;     // visited[v] <- false (0 means false)
+    }
+
+    // 2) key[0] <- 0
+    key[0] = 0;
+
+    // 3) for count <- 0 to (v-1) do
+    for (int count = 0; count < n; count++) {
+
+        // Find u: vertex with minimum key among unvisited vertices
+        int min = 99999;
+        int u = -1;
+        for (int i = 0; i < n; i++) {
+            if (visited[i] == 0 && key[i] < min) {
+                min = key[i];
+                u = i;
+            }
+        }
+
+        // visited[u] <- true (1 means true)
+        visited[u] = 1;
+
+        // for v <- 0 to (v-1) do
+        for (int v = 0; v < n; v++) {
+            // if graph[u][v] != 0 and visited[v] == false
+            if (graph[u][v] != 0 && visited[v] == 0) {
+                // if graph[u][v] < key[v]
+                if (graph[u][v] < key[v]) {
+                    key[v] = graph[u][v]; // key[v] <- graph[u][v]
+                    parent[v] = u;        // parent[v] <- u
+                }
+            }
+        }
+    }
+
+    // Print result and calculate MST weight
+    int total_weight = 0;
+    printf("Edge \tWeight\n");
+    for (int i = 1; i < n; i++) {
+        printf("%c - %c \t%d\n", name[parent[i]], name[i], graph[parent[i]][i]);
+        total_weight = total_weight + graph[parent[i]][i];
+    }
+    printf("Total MST Weight = %d\n", total_weight);
+
+    return 0;
+}
